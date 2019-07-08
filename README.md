@@ -1,6 +1,6 @@
 # Enigma Machine in Go
 
-The Enigma Machine implemented in Go for learning purposes.
+The Enigma Machine implemented in Go as [`cipher.Block`](https://golang.org/pkg/crypto/cipher/#Block) for learning purposes. Obviously, don't use this in production.
 
 ## Mathematical Analysis
 
