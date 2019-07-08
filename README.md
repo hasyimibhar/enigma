@@ -45,4 +45,4 @@ It can be shown that an Enigma machine is self-reciprocal, where the ciphertext 
 
 ### Implementation
 
-[`MinimalistEnigma`](https://github.com/hasyimibhar/enigma/blob/master/enigma/minimalist.go) demonstrates how [`Enigma`](https://github.com/hasyimibhar/enigma/blob/master/enigma/enigma.go) can be reimplemented using algebraic notation.
+[`MinimalistEnigma`](https://github.com/hasyimibhar/enigma/blob/master/minimalist.go) demonstrates how [`Enigma`](https://github.com/hasyimibhar/enigma/blob/master/enigma.go) can be reimplemented using algebraic notation.
