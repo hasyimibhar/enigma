@@ -22,15 +22,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	clone := machine.Clone()
-
 	plaintext := "helloworld"
 	ciphertext := machine.TransformString(plaintext)
-
-	fmt.Printf("%s -> %s\n", plaintext, ciphertext)
-
-	plaintext = ciphertext
-	ciphertext = clone.TransformString(plaintext)
 
 	fmt.Printf("%s -> %s\n", plaintext, ciphertext)
 }

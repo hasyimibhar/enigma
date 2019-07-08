@@ -1,15 +1,27 @@
 package enigma
 
-type MinimalistEnigmaRotor struct {
-	T        SubstituteCipher
-	Position int
-	Notches  []int
-}
-
+// MinimalistEnigma is an implementation of the Enigma Machine using
+// algebraic notation. The encryption of a single alphabet can be
+// expressed as:
+//
+//     E = P * SUM(R[i], n) * U * SUM(R[i], n)^-1 * P^-1
+//
+// where:
+//
+//     R = ROT(p) * T * ROT(-p)
+//     and
+//     P, T, U are monoalphabetic ciphers.
+//
 type MinimalistEnigma struct {
 	P SubstituteCipher
 	R []*MinimalistEnigmaRotor
 	U SubstituteCipher
+}
+
+type MinimalistEnigmaRotor struct {
+	T        SubstituteCipher
+	Position int
+	Notches  []int
 }
 
 func (e *MinimalistEnigma) Transform(from Alphabet) Alphabet {
@@ -60,11 +72,14 @@ func (e *MinimalistEnigma) rotors() Transformation {
 	tfs := []Transformation{}
 
 	for i := 0; i < len(e.R); i++ {
-		tfs = append(tfs, CombineTransformations(
+		// R = p^n * T * p^n^-1
+		R := CombineTransformations(
 			CaesarCipher(e.R[i].Position),
 			e.R[i].T,
 			CaesarCipher(e.R[i].Position).Inverse(),
-		))
+		)
+
+		tfs = append(tfs, R)
 	}
 
 	return CombineTransformations(tfs...)
