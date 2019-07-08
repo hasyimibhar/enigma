@@ -18,9 +18,9 @@ func TestMinimalistEnigma_Deterministic(t *testing.T) {
 	clone := minimalist.Clone()
 
 	plaintext := "loremipsumdolorsitametconsecteturadipiscingelitseddoeiusmodtemporincididuntutlaboreetdoloremagnaaliquautenimadminimveniamquisnostrudexercitationullamcolaborisnisiutaliquipexeacommodoconsequatduisauteiruredolorinreprehenderitinvoluptatevelitessecillumdoloreeufugiatnullapariaturexcepteursintoccaecatcupidatatnonproidentsuntinculpaquiofficiadeseruntmollitanimidestlaborum"
-	ciphertext := minimalist.TransformString(plaintext)
+	ciphertext := minimalist.EncryptString(plaintext)
 
-	actual := clone.TransformString(plaintext)
+	actual := clone.EncryptString(plaintext)
 
 	if actual != ciphertext {
 		t.Fatal("minimalist enigma machine is not deterministic")
@@ -41,9 +41,9 @@ func TestMinimalistEnigma_SelfReciprocal(t *testing.T) {
 	clone := minimalist.Clone()
 
 	plaintext := "loremipsumdolorsitametconsecteturadipiscingelitseddoeiusmodtemporincididuntutlaboreetdoloremagnaaliquautenimadminimveniamquisnostrudexercitationullamcolaborisnisiutaliquipexeacommodoconsequatduisauteiruredolorinreprehenderitinvoluptatevelitessecillumdoloreeufugiatnullapariaturexcepteursintoccaecatcupidatatnonproidentsuntinculpaquiofficiadeseruntmollitanimidestlaborum"
-	ciphertext := minimalist.TransformString(plaintext)
+	ciphertext := minimalist.EncryptString(plaintext)
 
-	actual := clone.TransformString(ciphertext)
+	actual := clone.EncryptString(ciphertext)
 
 	if actual != plaintext {
 		t.Fatal("minimalist enigma machine is not self-reciprocal")
@@ -75,8 +75,8 @@ func TestMinimalistEnigma_Equal(t *testing.T) {
 	}
 
 	plaintext := "loremipsumdolorsitametconsecteturadipiscingelitseddoeiusmodtemporincididuntutlaboreetdoloremagnaaliquautenimadminimveniamquisnostrudexercitationullamcolaborisnisiutaliquipexeacommodoconsequatduisauteiruredolorinreprehenderitinvoluptatevelitessecillumdoloreeufugiatnullapariaturexcepteursintoccaecatcupidatatnonproidentsuntinculpaquiofficiadeseruntmollitanimidestlaborum"
-	machineCiphertext := machine.TransformString(plaintext)
-	minimalistCiphertext := minimalist.TransformString(plaintext)
+	machineCiphertext := machine.EncryptString(plaintext)
+	minimalistCiphertext := minimalist.EncryptString(plaintext)
 
 	if machineCiphertext != minimalistCiphertext {
 		t.Fatal("EM is not equivalent to MEM")

@@ -16,7 +16,7 @@ func TestRotor(t *testing.T) {
 		// Test 2 full rotations
 		for i := 0; i < 26*2; i++ {
 			for alph := Alphabet('a'); alph <= Alphabet('z'); alph++ {
-				actual := rotor.Transform(alph)
+				actual := rotor.Encrypt(alph)
 				if actual != alph {
 					t.Fatalf("expecting '%c' * R(%d) => '%c', got '%c' instead", alph, i, actual, alph)
 				}
@@ -81,7 +81,7 @@ func TestRotor_WithWiringTable(t *testing.T) {
 				// Test 2 full rotations
 				for i := 0; i < 26*2; i++ {
 					for alph := Alphabet('a'); alph <= Alphabet('z'); alph++ {
-						actual := rotor.Transform(alph)
+						actual := rotor.Encrypt(alph)
 						expected := Alphabet('a' + mod26(int(wiringTable[mod26(int(alph-'a')+ip+i)]-'a')-ip-i))
 
 						if actual != expected {
@@ -130,7 +130,7 @@ func TestReflector(t *testing.T) {
 				// Test 2 full rotations
 				for i := 0; i < 26*2; i++ {
 					for alph := Alphabet('a'); alph <= Alphabet('z'); alph++ {
-						actual := rotor.Transform(alph)
+						actual := rotor.Encrypt(alph)
 						expected := Alphabet('a' + mod26(int(wiringTable[mod26(int(alph-'a')+ip+i)]-'a')-ip-i))
 
 						if actual != expected {

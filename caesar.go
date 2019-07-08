@@ -2,7 +2,7 @@ package enigma
 
 type CaesarCipher int
 
-func (n CaesarCipher) Transform(from Alphabet) (to Alphabet) {
+func (n CaesarCipher) Encrypt(from Alphabet) (to Alphabet) {
 	if n >= 0 {
 		to = Alphabet('a' + ((int(from-'a') + int(n)) % 26))
 	} else {
@@ -17,10 +17,10 @@ func (n CaesarCipher) Transform(from Alphabet) (to Alphabet) {
 	return
 }
 
-func (n CaesarCipher) Clone() Transformation {
+func (n CaesarCipher) Clone() Cipher {
 	return CaesarCipher(int(n))
 }
 
-func (n CaesarCipher) Inverse() Transformation {
+func (n CaesarCipher) Inverse() Cipher {
 	return CaesarCipher(int(n) * -1)
 }

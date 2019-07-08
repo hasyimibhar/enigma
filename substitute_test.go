@@ -9,7 +9,7 @@ func TestSubstituteCipher_Identity(t *testing.T) {
 	ident := NewIdentitySubstituteCipher()
 
 	for alph := Alphabet('a'); alph <= Alphabet('z'); alph++ {
-		x := ident.Transform(alph)
+		x := ident.Encrypt(alph)
 		if x != alph {
 			t.Fatalf("expecting '%c' * I => '%c', got '%c' instead", alph, alph, x)
 		}
@@ -57,7 +57,7 @@ func TestSubstituteCipher_CustomWiring(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(string(tt.From), func(t *testing.T) {
-			x := ident.Transform(tt.From)
+			x := ident.Encrypt(tt.From)
 			if x != tt.To {
 				t.Fatalf("expecting '%c' * T => '%c', got '%c' instead", tt.From, tt.To, x)
 			}
@@ -116,7 +116,7 @@ func TestSubstituteCipher_KnownRotors(t *testing.T) {
 			for i := 0; i < 26; i++ {
 				from := Alphabet('a' + i)
 				expected := Alphabet(table[i])
-				actual := cipher.Transform(from)
+				actual := cipher.Encrypt(from)
 
 				if expected != actual {
 					t.Fatalf("expecting '%c' * T('%s') => '%c', got '%c' instead", from, tt.Name, expected, actual)
@@ -177,8 +177,8 @@ func TestSubstituteCipher_Clone(t *testing.T) {
 
 			for i := 0; i < 26; i++ {
 				from := Alphabet('a' + i)
-				expected := cipher.Transform(from)
-				actual := clone.Transform(from)
+				expected := cipher.Encrypt(from)
+				actual := clone.Encrypt(from)
 
 				if expected != actual {
 					t.Fatalf("expecting '%c' * T('%s') => '%c' * T('%s'-clone), got '%c' instead",

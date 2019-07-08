@@ -26,8 +26,8 @@ func NewReflectorWithWiringTable(position int, wiringTable string, rotatable boo
 	rotor.rotatable = rotatable
 
 	for alph := Alphabet('a'); alph <= Alphabet('z'); alph++ {
-		image := rotor.wiring.Transform(alph)
-		if alph != rotor.wiring.Transform(image) {
+		image := rotor.wiring.Encrypt(alph)
+		if alph != rotor.wiring.Encrypt(image) {
 			return nil, fmt.Errorf("rotor: invalid reflector wiring table: '%c' * T != '%c' * T", alph, image)
 		}
 	}
@@ -127,16 +127,16 @@ func (r *Rotor) Rotate() bool {
 	return false
 }
 
-func (r *Rotor) Transform(from Alphabet) Alphabet {
-	tf := CombineTransformations(r.position, r.wiring, r.position.Inverse())
+func (r *Rotor) Encrypt(from Alphabet) Alphabet {
+	tf := CombineCiphers(r.position, r.wiring, r.position.Inverse())
 	if r.inversed {
 		tf = tf.Inverse()
 	}
 
-	return tf.Transform(from)
+	return tf.Encrypt(from)
 }
 
-func (r *Rotor) Inverse() Transformation {
+func (r *Rotor) Inverse() Cipher {
 	return &Rotor{
 		wiring:    r.wiring.Clone().(SubstituteCipher),
 		position:  r.position.Clone().(CaesarCipher),
@@ -146,7 +146,7 @@ func (r *Rotor) Inverse() Transformation {
 	}
 }
 
-func (r *Rotor) Clone() Transformation {
+func (r *Rotor) Clone() Cipher {
 	return &Rotor{
 		wiring:    r.wiring.Clone().(SubstituteCipher),
 		position:  r.position.Clone().(CaesarCipher),
@@ -162,15 +162,15 @@ func withinRange(x, min, max int) bool {
 
 type RotorList []*Rotor
 
-func (l RotorList) Transform(from Alphabet) Alphabet {
+func (l RotorList) Encrypt(from Alphabet) Alphabet {
 	to := from
 	for _, tf := range l {
-		to = tf.Transform(to)
+		to = tf.Encrypt(to)
 	}
 	return to
 }
 
-func (l RotorList) Clone() Transformation {
+func (l RotorList) Clone() Cipher {
 	rotors := []*Rotor{}
 	for _, r := range l {
 		rotors = append(rotors, r.Clone().(*Rotor))
@@ -178,7 +178,7 @@ func (l RotorList) Clone() Transformation {
 	return RotorList(rotors)
 }
 
-func (l RotorList) Inverse() Transformation {
+func (l RotorList) Inverse() Cipher {
 	rotors := []*Rotor{}
 	for i := len(l) - 1; i >= 0; i-- {
 		rotors = append(rotors, l[i].Inverse().(*Rotor))

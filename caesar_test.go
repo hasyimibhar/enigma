@@ -19,7 +19,7 @@ func TestCaesarCipher(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(strconv.Itoa(tt.N), func(t *testing.T) {
 			cipher := CaesarCipher(tt.N)
-			ciphertext := TransformString(cipher, tt.Plaintext)
+			ciphertext := EncryptString(cipher, tt.Plaintext)
 
 			if ciphertext != tt.ExpectedCiphertext {
 				t.Fatalf("expecting '%s' * ROT%d => '%s', got '%s' instead",
@@ -31,7 +31,7 @@ func TestCaesarCipher(t *testing.T) {
 
 func TestCaesarCipher_Identity(t *testing.T) {
 	ident := CaesarCipher(0)
-	ciphertext := TransformString(ident, "helloworld")
+	ciphertext := EncryptString(ident, "helloworld")
 	if ciphertext != "helloworld" {
 		t.Fatal("caesar cipher does not have an identity element")
 	}
@@ -40,7 +40,7 @@ func TestCaesarCipher_Identity(t *testing.T) {
 func TestCaesarCipher_Inverse(t *testing.T) {
 	cipher := CaesarCipher(17)
 	inverse := cipher.Inverse()
-	ciphertext := TransformString(CombineTransformations(cipher, inverse), "helloworld")
+	ciphertext := EncryptString(CombineCiphers(cipher, inverse), "helloworld")
 
 	if ciphertext != "helloworld" {
 		t.Fatal("caesar cipher does not have an identity element")

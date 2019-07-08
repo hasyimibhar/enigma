@@ -48,8 +48,8 @@ func NewWithConfig(cfg *Config) (*Enigma, error) {
 	}, nil
 }
 
-func (e *Enigma) Transform(from Alphabet) Alphabet {
-	to := e.transform().Transform(from)
+func (e *Enigma) Encrypt(from Alphabet) Alphabet {
+	to := e.transform().Encrypt(from)
 
 	for i := 0; i < len(e.Rotors); i++ {
 		turnover := e.Rotors[i].Rotate()
@@ -61,10 +61,10 @@ func (e *Enigma) Transform(from Alphabet) Alphabet {
 	return to
 }
 
-func (e *Enigma) TransformString(from string) string {
+func (e *Enigma) EncryptString(from string) string {
 	to := []byte{}
 	for _, alph := range []byte(from) {
-		to = append(to, byte(e.Transform(Alphabet(alph))))
+		to = append(to, byte(e.Encrypt(Alphabet(alph))))
 	}
 	return string(to)
 }
@@ -76,8 +76,8 @@ func (e *Enigma) Clone() *Enigma {
 	}
 }
 
-func (e *Enigma) transform() Transformation {
-	return CombineTransformations(
+func (e *Enigma) transform() Cipher {
+	return CombineCiphers(
 		e.Plugboard,
 		RotorList(e.Rotors),
 		RotorList(e.Rotors[:len(e.Rotors)-1]).Inverse(),

@@ -24,13 +24,13 @@ type MinimalistEnigmaRotor struct {
 	Notches  []int
 }
 
-func (e *MinimalistEnigma) Transform(from Alphabet) Alphabet {
+func (e *MinimalistEnigma) Encrypt(from Alphabet) Alphabet {
 	// E = P * R * U * R^-1 * P^-1
-	E := CombineTransformations(
+	E := CombineCiphers(
 		e.P, e.rotors(), e.U, e.rotors().Inverse(), e.P.Inverse(),
 	)
 
-	to := E.Transform(from)
+	to := E.Encrypt(from)
 
 	// Rotate the rotors
 	for i := 0; i < len(e.R); i++ {
@@ -52,10 +52,10 @@ func (e *MinimalistEnigma) Transform(from Alphabet) Alphabet {
 	return to
 }
 
-func (e *MinimalistEnigma) TransformString(from string) string {
+func (e *MinimalistEnigma) EncryptString(from string) string {
 	to := []byte{}
 	for _, alph := range []byte(from) {
-		to = append(to, byte(e.Transform(Alphabet(alph))))
+		to = append(to, byte(e.Encrypt(Alphabet(alph))))
 	}
 	return string(to)
 }
@@ -68,12 +68,12 @@ func (e *MinimalistEnigma) Clone() *MinimalistEnigma {
 	}
 }
 
-func (e *MinimalistEnigma) rotors() Transformation {
-	tfs := []Transformation{}
+func (e *MinimalistEnigma) rotors() Cipher {
+	tfs := []Cipher{}
 
 	for i := 0; i < len(e.R); i++ {
 		// R = p^n * T * p^n^-1
-		R := CombineTransformations(
+		R := CombineCiphers(
 			CaesarCipher(e.R[i].Position),
 			e.R[i].T,
 			CaesarCipher(e.R[i].Position).Inverse(),
@@ -82,7 +82,7 @@ func (e *MinimalistEnigma) rotors() Transformation {
 		tfs = append(tfs, R)
 	}
 
-	return CombineTransformations(tfs...)
+	return CombineCiphers(tfs...)
 }
 
 func (r *MinimalistEnigmaRotor) Clone() *MinimalistEnigmaRotor {

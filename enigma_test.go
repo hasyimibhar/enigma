@@ -21,9 +21,9 @@ func TestEnigma_Deterministic(t *testing.T) {
 	clone := machine.Clone()
 
 	plaintext := "loremipsumdolorsitametconsecteturadipiscingelitseddoeiusmodtemporincididuntutlaboreetdoloremagnaaliquautenimadminimveniamquisnostrudexercitationullamcolaborisnisiutaliquipexeacommodoconsequatduisauteiruredolorinreprehenderitinvoluptatevelitessecillumdoloreeufugiatnullapariaturexcepteursintoccaecatcupidatatnonproidentsuntinculpaquiofficiadeseruntmollitanimidestlaborum"
-	ciphertext := machine.TransformString(plaintext)
+	ciphertext := machine.EncryptString(plaintext)
 
-	actual := clone.TransformString(plaintext)
+	actual := clone.EncryptString(plaintext)
 	if actual != ciphertext {
 		t.Fatal("enigma machine is not deterministic")
 	}
@@ -46,9 +46,9 @@ func TestEnigma_SelfReciprocal(t *testing.T) {
 	clone := machine.Clone()
 
 	plaintext := "loremipsumdolorsitametconsecteturadipiscingelitseddoeiusmodtemporincididuntutlaboreetdoloremagnaaliquautenimadminimveniamquisnostrudexercitationullamcolaborisnisiutaliquipexeacommodoconsequatduisauteiruredolorinreprehenderitinvoluptatevelitessecillumdoloreeufugiatnullapariaturexcepteursintoccaecatcupidatatnonproidentsuntinculpaquiofficiadeseruntmollitanimidestlaborum"
-	ciphertext := machine.TransformString(plaintext)
+	ciphertext := machine.EncryptString(plaintext)
 
-	actual := clone.TransformString(ciphertext)
+	actual := clone.EncryptString(ciphertext)
 	if actual != plaintext {
 		t.Fatal("enigma machine is not self-reciprocal")
 	}

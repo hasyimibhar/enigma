@@ -44,12 +44,12 @@ func NewSubstituteCipherWithTable(table string) (SubstituteCipher, error) {
 	return alphMap, nil
 }
 
-func (s SubstituteCipher) Transform(from Alphabet) (to Alphabet) {
+func (s SubstituteCipher) Encrypt(from Alphabet) (to Alphabet) {
 	to = s[from]
 	return
 }
 
-func (s SubstituteCipher) Clone() Transformation {
+func (s SubstituteCipher) Clone() Cipher {
 	clone := map[Alphabet]Alphabet{}
 	for k, v := range s {
 		clone[k] = v
@@ -57,7 +57,7 @@ func (s SubstituteCipher) Clone() Transformation {
 	return SubstituteCipher(clone)
 }
 
-func (s SubstituteCipher) Inverse() Transformation {
+func (s SubstituteCipher) Inverse() Cipher {
 	inverse := map[Alphabet]Alphabet{}
 	for k, v := range s {
 		inverse[v] = k
