@@ -140,7 +140,7 @@ func (r *Rotor) Inverse() Transformation {
 	return &Rotor{
 		wiring:    r.wiring.Clone().(SubstituteCipher),
 		position:  r.position.Clone().(CaesarCipher),
-		notches:   r.notches,
+		notches:   intList(r.notches).Clone(),
 		rotatable: r.rotatable,
 		inversed:  !r.inversed,
 	}
@@ -150,7 +150,7 @@ func (r *Rotor) Clone() Transformation {
 	return &Rotor{
 		wiring:    r.wiring.Clone().(SubstituteCipher),
 		position:  r.position.Clone().(CaesarCipher),
-		notches:   r.notches,
+		notches:   intList(r.notches).Clone(),
 		rotatable: r.rotatable,
 		inversed:  r.inversed,
 	}
@@ -191,9 +191,19 @@ func notches(s string) []int {
 	s = strings.ToLower(s)
 	notches := []int{}
 
-	for _, alph := range notches {
-		notches = append(notches, int(alph-'a')+1)
+	for _, alph := range []byte(s) {
+		notches = append(notches, int(alph-'a'))
 	}
 
 	return notches
+}
+
+type intList []int
+
+func (l intList) Clone() []int {
+	clone := []int{}
+	for _, i := range l {
+		clone = append(clone, i)
+	}
+	return clone
 }

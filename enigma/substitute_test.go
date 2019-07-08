@@ -126,6 +126,69 @@ func TestSubstituteCipher_KnownRotors(t *testing.T) {
 	}
 }
 
+func TestSubstituteCipher_Clone(t *testing.T) {
+	tests := []struct {
+		Name        string
+		WiringTable string
+	}{
+		{"IC", "DMTWSILRUYQNKFEJCAZBPGXOHV"},
+		{"IIC", "HQZGPJTMOBLNCIFDYAWVEUSRKX"},
+		{"IIIC", "UQNTLSZFMREHDPXKIBVYGJCWOA"},
+
+		{"I", "JGDQOXUSCAMIFRVTPNEWKBLZYH"},
+		{"II", "NTZPSFBOKMWRCJDIVLAEYUXHGQ"},
+		{"III", "JVIUBHTCDYAKEQZPOSGXNRMWFL"},
+		{"IV", "QYHOGNECVPUZTFDJAXWMKISRBL"},
+		{"V", "QWERTZUIOASDFGHJKPYXCVBNML"},
+
+		{"I-K", "PEZUOHXSCVFMTBGLRINQJWAYDK"},
+		{"II-K", "ZOUESYDKFWPCIQXHMVBLGNJRAT"},
+		{"III-K", "EHRVXGAOBQUSIMZFLYNWKTPDJC"},
+		{"UKW-K", "IMETCGFRAYSQBZXWLHKDVUPOJN"},
+		{"ETW-K", "QWERTZUIOASDFGHJKPYXCVBNML"},
+
+		{"Enigma I/I", "EKMFLGDQVZNTOWYHXUSPAIBRCJ"},
+		{"Enigma I/II", "AJDKSIRUXBLHWTMCQGZNPYFVOE"},
+		{"Enigma I/III", "BDFHJLCPRTXVZNYEIWGAKMUSQO"},
+		{"M3 Army/IV", "ESOVPZJAYQUIRHXLNFTGKDCMWB"},
+		{"M3 Army/V", "VZBRGITYUPSDNHLXAWMJQOFECK"},
+		{"M3 & M4 Naval/VI", "JPGVOUMFYQBENHZRDKASXLICTW"},
+		{"M3 & M4 Naval/VII", "NZJHGRCXMYSWBOUFAIVLPEKQDT"},
+		{"M3 & M4 Naval/VIII", "FKQHTLXOCBJSPDZRAMEWNIUYGV"},
+
+		{"Beta", "LEYJVCNIXWPBQMDRTAKZGFUHOS"},
+		{"Gamma", "FSOKANUERHMBTIYCWLQPZXVGJD"},
+		{"Reflector A", "EJMZALYXVBWFCRQUONTSPIKHGD"},
+		{"Reflector B", "YRUHQSLDPXNGOKMIEBFZCWVJAT"},
+		{"Reflector C", "FVPJIAOYEDRZXWGCTKUQSBNMHL"},
+		{"Reflector B Thin", "ENKQAUYWJICOPBLMDXZVFTHRGS"},
+		{"Reflector C Thin", "RDOBJNTKVEHMLFCWZAXGYIPSUQ"},
+		{"Enigma I/ETW", "ABCDEFGHIJKLMNOPQRSTUVWXYZ"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.Name, func(t *testing.T) {
+			cipher, err := NewSubstituteCipherWithTable(tt.WiringTable)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			clone := cipher.Clone()
+
+			for i := 0; i < 26; i++ {
+				from := Alphabet('a' + i)
+				expected := cipher.Transform(from)
+				actual := clone.Transform(from)
+
+				if expected != actual {
+					t.Fatalf("expecting '%c' * T('%s') => '%c' * T('%s'-clone), got '%c' instead",
+						from, tt.Name, expected, tt.Name, actual)
+				}
+			}
+		})
+	}
+}
+
 func TestSubstituteCipher_InvalidWiringTable(t *testing.T) {
 	tests := []struct {
 		Name        string

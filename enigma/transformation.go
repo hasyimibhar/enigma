@@ -1,5 +1,9 @@
 package enigma
 
+import (
+	"strings"
+)
+
 type Transformation interface {
 	Transform(from Alphabet) Alphabet
 	Clone() Transformation
@@ -46,4 +50,12 @@ func TransformString(tf Transformation, from string) string {
 		to = append(to, byte(tf.Transform(Alphabet(alph))))
 	}
 	return string(to)
+}
+
+func TransformAsString(tf Transformation) string {
+	str := []byte{}
+	for i := 0; i < 26; i++ {
+		str = append(str, byte(tf.Transform(Alphabet('a'+byte(i)))))
+	}
+	return strings.ToUpper(string(str))
 }
