@@ -128,11 +128,9 @@ func (r *Rotor) Rotate() bool {
 }
 
 func (r *Rotor) Transform(from Alphabet) Alphabet {
-	var tf Transformation
-	if !r.inversed {
-		tf = CombineTransformations(r.position, r.wiring)
-	} else {
-		tf = CombineTransformations(r.wiring, r.position)
+	tf := CombineTransformations(r.position, r.wiring, r.position.Inverse())
+	if r.inversed {
+		tf = tf.Inverse()
 	}
 
 	return tf.Transform(from)
@@ -140,8 +138,8 @@ func (r *Rotor) Transform(from Alphabet) Alphabet {
 
 func (r *Rotor) Inverse() Transformation {
 	return &Rotor{
-		wiring:    r.wiring.Inverse().(SubstituteCipher),
-		position:  r.position.Inverse().(CaesarCipher),
+		wiring:    r.wiring.Clone().(SubstituteCipher),
+		position:  r.position.Clone().(CaesarCipher),
 		notches:   r.notches,
 		rotatable: r.rotatable,
 		inversed:  !r.inversed,

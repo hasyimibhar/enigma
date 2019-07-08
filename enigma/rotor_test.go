@@ -17,9 +17,8 @@ func TestRotor(t *testing.T) {
 		for i := 0; i < 26*2; i++ {
 			for alph := Alphabet('a'); alph <= Alphabet('z'); alph++ {
 				actual := rotor.Transform(alph)
-				expected := Alphabet('a' + ((ip + int(alph-'a') + i) % 26))
-				if actual != expected {
-					t.Fatalf("expecting '%c' * R(%d) => '%c', got '%c' instead", alph, i, actual, expected)
+				if actual != alph {
+					t.Fatalf("expecting '%c' * R(%d) => '%c', got '%c' instead", alph, i, actual, alph)
 				}
 			}
 
@@ -83,7 +82,8 @@ func TestRotor_WithWiringTable(t *testing.T) {
 				for i := 0; i < 26*2; i++ {
 					for alph := Alphabet('a'); alph <= Alphabet('z'); alph++ {
 						actual := rotor.Transform(alph)
-						expected := Alphabet(wiringTable[(int(alph-'a')+ip+i)%26])
+						expected := Alphabet('a' + mod26(int(wiringTable[mod26(int(alph-'a')+ip+i)]-'a')-ip-i))
+
 						if actual != expected {
 							t.Fatalf("expecting '%c' * R['%s'](%d) => '%c', got '%c' instead", alph, tt.Name, i, actual, expected)
 						}
@@ -94,6 +94,14 @@ func TestRotor_WithWiringTable(t *testing.T) {
 			}
 		})
 	}
+}
+
+func mod26(i int) int {
+	x := i % 26
+	for x < 0 {
+		x += 26
+	}
+	return x
 }
 
 func TestReflector(t *testing.T) {
@@ -123,7 +131,8 @@ func TestReflector(t *testing.T) {
 				for i := 0; i < 26*2; i++ {
 					for alph := Alphabet('a'); alph <= Alphabet('z'); alph++ {
 						actual := rotor.Transform(alph)
-						expected := Alphabet(wiringTable[(int(alph-'a')+ip+i)%26])
+						expected := Alphabet('a' + mod26(int(wiringTable[mod26(int(alph-'a')+ip+i)]-'a')-ip-i))
+
 						if actual != expected {
 							t.Fatalf("expecting '%c' * R['%s'](%d) => '%c', got '%c' instead", alph, tt.Name, i, actual, expected)
 						}
