@@ -4,7 +4,7 @@ The Enigma Machine implemented in Go as [`cipher.Block`](https://golang.org/pkg/
 
 ## Mathematical Analysis
 
-A single encryption can be expressed with the following expression:
+A single encryption can be [expressed](https://en.wikipedia.org/wiki/Enigma_machine#Mathematical_analysis) as:
 
     E = P * SUM(R[i], n) * U * SUM(R[i], n)^-1 * P^-1
     R[i] = ROT(p[i]) * T * ROT(-p[i])
