@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	cipher, err := enigma.NewWithConfig(&enigma.Config{
+	machine, err := enigma.NewWithConfig(&enigma.Config{
 		Plugboard: "EJ OY IV AQ KW FX MT PS LU BD",
 		Rotors: []*enigma.RotorConfig{
 			&enigma.RotorConfig{Name: "IV", Position: 14},
@@ -22,24 +22,15 @@ func main() {
 		os.Exit(1)
 	}
 
-	clone := cipher.Clone()
+	clone := machine.Clone()
 
 	plaintext := "helloworld"
-	ciphertext := []byte{}
+	ciphertext := machine.TransformString(plaintext)
 
-	for _, alph := range plaintext {
-		x := byte(cipher.Transform(enigma.Alphabet(alph)))
-		ciphertext = append(ciphertext, x)
-	}
+	fmt.Printf("%s -> %s\n", plaintext, ciphertext)
 
-	fmt.Printf("%s -> %s\n", plaintext, string(ciphertext))
+	plaintext = ciphertext
+	ciphertext = clone.TransformString(plaintext)
 
-	plaintext = string(ciphertext)
-	ciphertext = []byte{}
-
-	for _, alph := range plaintext {
-		ciphertext = append(ciphertext, byte(clone.Transform(enigma.Alphabet(alph))))
-	}
-
-	fmt.Printf("%s -> %s\n", plaintext, string(ciphertext))
+	fmt.Printf("%s -> %s\n", plaintext, ciphertext)
 }
