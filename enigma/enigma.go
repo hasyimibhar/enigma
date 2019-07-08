@@ -62,7 +62,11 @@ func (e *Enigma) Transform(from Alphabet) Alphabet {
 }
 
 func (e *Enigma) TransformString(from string) string {
-	return TransformString(e.transform(), from)
+	to := []byte{}
+	for _, alph := range []byte(from) {
+		to = append(to, byte(e.Transform(Alphabet(alph))))
+	}
+	return string(to)
 }
 
 func (e *Enigma) Clone() *Enigma {
