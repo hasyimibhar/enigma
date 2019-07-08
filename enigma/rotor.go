@@ -6,9 +6,8 @@ import (
 )
 
 type Rotor struct {
-	SubstituteCipher
-
-	position  int
+	wiring    SubstituteCipher
+	position  CaesarCipher
 	notches   []int
 	rotatable bool
 	inversed  bool
@@ -27,8 +26,8 @@ func NewReflectorWithWiringTable(position int, wiringTable string, rotatable boo
 	rotor.rotatable = rotatable
 
 	for alph := Alphabet('a'); alph <= Alphabet('z'); alph++ {
-		image := rotor.SubstituteCipher.Transform(alph)
-		if alph != rotor.SubstituteCipher.Transform(image) {
+		image := rotor.wiring.Transform(alph)
+		if alph != rotor.wiring.Transform(image) {
 			return nil, fmt.Errorf("rotor: invalid reflector wiring table: '%c' * T != '%c' * T", alph, image)
 		}
 	}
@@ -53,95 +52,17 @@ func NewRotorWithWiringTable(position int, notches []int, wiringTable string) (*
 		seen[notch] = true
 	}
 
-	cipher, err := NewSubstituteCipherWithTable(wiringTable)
+	substitute, err := NewSubstituteCipherWithTable(wiringTable)
 	if err != nil {
 		return nil, fmt.Errorf("rotor: %s", err)
 	}
 
 	return &Rotor{
-		SubstituteCipher: cipher,
-
-		position:  position,
+		wiring:    substitute,
+		position:  CaesarCipher(position),
 		notches:   notches,
 		rotatable: true,
 	}, nil
-}
-
-// Rotate rotates the rotor. It returns true if
-// it reaches its kick position.
-func (r *Rotor) Rotate() bool {
-	if !r.rotatable {
-		return false
-	}
-
-	r.position = (r.position + 1) % 26
-
-	for _, notch := range r.notches {
-		if r.position == notch {
-			return true
-		}
-	}
-
-	return false
-}
-
-func (r *Rotor) Transform(from Alphabet) Alphabet {
-	if !r.inversed {
-		return r.SubstituteCipher.Transform(r.translate(from))
-	}
-
-	return r.translate(r.SubstituteCipher.Transform(from))
-}
-
-func (r *Rotor) Inverse() *Rotor {
-	return &Rotor{
-		SubstituteCipher: r.SubstituteCipher.Inverse(),
-
-		position:  r.position,
-		notches:   r.notches,
-		rotatable: r.rotatable,
-		inversed:  !r.inversed,
-	}
-}
-
-func (r *Rotor) Clone() *Rotor {
-	return &Rotor{
-		SubstituteCipher: r.SubstituteCipher.Clone(),
-
-		position:  r.position,
-		notches:   r.notches,
-		rotatable: r.rotatable,
-		inversed:  r.inversed,
-	}
-}
-
-func (r *Rotor) translate(from Alphabet) (to Alphabet) {
-	if !r.inversed {
-		to = Alphabet('a' + ((int(from-'a') + r.position) % 26))
-	} else {
-		pos := int(from-'a') - r.position
-		if pos < 0 {
-			pos += 26
-		}
-
-		to = Alphabet('a' + pos)
-	}
-
-	return
-}
-
-func withinRange(x, min, max int) bool {
-	return x >= min && x <= max
-}
-
-type RotorList []*Rotor
-
-func (l RotorList) Clone() RotorList {
-	rotors := []*Rotor{}
-	for _, r := range l {
-		rotors = append(rotors, r.Clone())
-	}
-	return rotors
 }
 
 func NewRotorWithName(position int, name string) (rotor *Rotor, err error) {
@@ -186,6 +107,86 @@ func NewReflectorWithName(position int, name string) (rotor *Rotor, err error) {
 	}
 
 	return
+}
+
+// Rotate rotates the rotor. It returns true if
+// it reaches its kick position.
+func (r *Rotor) Rotate() bool {
+	if !r.rotatable {
+		return false
+	}
+
+	r.position = CaesarCipher((int(r.position) + 1) % 26)
+
+	for _, notch := range r.notches {
+		if int(r.position) == notch {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (r *Rotor) Transform(from Alphabet) Alphabet {
+	var tf Transformation
+	if !r.inversed {
+		tf = CombineTransformations(r.position, r.wiring)
+	} else {
+		tf = CombineTransformations(r.wiring, r.position)
+	}
+
+	return tf.Transform(from)
+}
+
+func (r *Rotor) Inverse() Transformation {
+	return &Rotor{
+		wiring:    r.wiring.Inverse().(SubstituteCipher),
+		position:  r.position.Inverse().(CaesarCipher),
+		notches:   r.notches,
+		rotatable: r.rotatable,
+		inversed:  !r.inversed,
+	}
+}
+
+func (r *Rotor) Clone() Transformation {
+	return &Rotor{
+		wiring:    r.wiring.Clone().(SubstituteCipher),
+		position:  r.position.Clone().(CaesarCipher),
+		notches:   r.notches,
+		rotatable: r.rotatable,
+		inversed:  r.inversed,
+	}
+}
+
+func withinRange(x, min, max int) bool {
+	return x >= min && x <= max
+}
+
+type RotorList []*Rotor
+
+func (l RotorList) Transform(from Alphabet) Alphabet {
+	to := from
+	for _, tf := range l {
+		to = tf.Transform(to)
+	}
+	return to
+}
+
+func (l RotorList) Clone() Transformation {
+	rotors := []*Rotor{}
+	for _, r := range l {
+		rotors = append(rotors, r.Clone().(*Rotor))
+	}
+	return RotorList(rotors)
+}
+
+func (l RotorList) Inverse() Transformation {
+	rotors := []*Rotor{}
+	for i := len(l) - 1; i >= 0; i-- {
+		rotors = append(rotors, l[i].Inverse().(*Rotor))
+	}
+
+	return RotorList(rotors)
 }
 
 func notches(s string) []int {

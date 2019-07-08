@@ -49,18 +49,18 @@ func (s SubstituteCipher) Transform(from Alphabet) (to Alphabet) {
 	return
 }
 
-func (s SubstituteCipher) Clone() SubstituteCipher {
+func (s SubstituteCipher) Clone() Transformation {
 	clone := map[Alphabet]Alphabet{}
 	for k, v := range s {
 		clone[k] = v
 	}
-	return clone
+	return SubstituteCipher(clone)
 }
 
-func (s SubstituteCipher) Inverse() SubstituteCipher {
+func (s SubstituteCipher) Inverse() Transformation {
 	inverse := map[Alphabet]Alphabet{}
 	for k, v := range s {
 		inverse[v] = k
 	}
-	return inverse
+	return SubstituteCipher(inverse)
 }

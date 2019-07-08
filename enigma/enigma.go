@@ -6,10 +6,6 @@ import (
 
 type Alphabet byte
 
-type Transformation interface {
-	Transform(from Alphabet) Alphabet
-}
-
 type Enigma struct {
 	Plugboard SubstituteCipher
 	Rotors    []*Rotor
@@ -53,12 +49,7 @@ func NewWithConfig(cfg *Config) (*Enigma, error) {
 }
 
 func (e *Enigma) Transform(from Alphabet) Alphabet {
-	tfs := e.transformations()
-	to := from
-
-	for _, t := range tfs {
-		to = t.Transform(to)
-	}
+	to := e.transform().Transform(from)
 
 	for i := 0; i < len(e.Rotors); i++ {
 		turnover := e.Rotors[i].Rotate()
@@ -71,34 +62,23 @@ func (e *Enigma) Transform(from Alphabet) Alphabet {
 }
 
 func (e *Enigma) TransformString(from string) string {
-	to := []byte{}
-	for _, alph := range []byte(from) {
-		to = append(to, byte(e.Transform(Alphabet(alph))))
-	}
-	return string(to)
+	return TransformString(e.transform(), from)
 }
 
 func (e *Enigma) Clone() *Enigma {
 	return &Enigma{
-		Plugboard: e.Plugboard.Clone(),
-		Rotors:    RotorList(e.Rotors).Clone(),
+		Plugboard: e.Plugboard.Clone().(SubstituteCipher),
+		Rotors:    RotorList(e.Rotors).Clone().(RotorList),
 	}
 }
 
-func (e *Enigma) transformations() []Transformation {
-	tfs := []Transformation{e.Plugboard}
-
-	for i := 0; i < len(e.Rotors); i++ {
-		tfs = append(tfs, e.Rotors[i])
-	}
-
-	for i := len(e.Rotors) - 2; i >= 0; i-- {
-		tfs = append(tfs, e.Rotors[i].Inverse())
-	}
-
-	tfs = append(tfs, e.Plugboard.Inverse())
-
-	return tfs
+func (e *Enigma) transform() Transformation {
+	return CombineTransformations(
+		e.Plugboard,
+		RotorList(e.Rotors),
+		RotorList(e.Rotors[:len(e.Rotors)-1]).Inverse(),
+		e.Plugboard.Inverse(),
+	)
 }
 
 func newPlugboard(wiring string) SubstituteCipher {
