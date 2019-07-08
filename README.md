@@ -19,8 +19,7 @@ All elements are from the set of [monoalphabetic ciphers](https://en.wikipedia.o
 
 - the operator `*` applies 2 ciphers from left to right:
     
-        A = B * C
-        A(X) = C(B(X))
+        A * B = B(A(X))
 
 - `A * (B * C) = (A * B) * C` (associatve)
 - `A * I = A`, where `I` is a cipher that returns the plaintext (identity)
