@@ -1,6 +1,6 @@
-# Enigma Machine in Go
+# Enigma machine in Go
 
-The Enigma Machine implemented in Go as [`cipher.Block`](https://golang.org/pkg/crypto/cipher/#Block) for learning purposes. Obviously, don't use this in production.
+The [Enigma machine](https://en.wikipedia.org/wiki/Enigma_machine) implemented in Go as [`cipher.Block`](https://golang.org/pkg/crypto/cipher/#Block) for learning purposes. Obviously, don't use this in production.
 
 ## Mathematical Analysis
 
@@ -31,7 +31,7 @@ with an additional constraint:
 
 ### Self-reciprocal
 
-It can be shown that an Enigma machine is self-reciprocal, where the ciphertext from an enigma machine `M`, when fed to another enigma machine with the exact configurations of `M`, will return the plaintext:
+It can be shown that an Enigma machine is self-reciprocal, where the ciphertext from an Enigma machine `M`, when fed to another Enigma machine with the exact configurations of `M`, will return the plaintext:
 
 	E * E
 	= [P * SUM(R[i], n) * U * SUM(R[i], n)^-1 * P^-1] *
