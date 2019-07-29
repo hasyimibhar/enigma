@@ -17,16 +17,19 @@ func main() {
 		Reflector: &enigma.RotorConfig{Name: "A"},
 	}
 
-	alice, _ := enigma.NewCipher(sharedKey)
-	bob, _ := enigma.NewCipher(sharedKey)
+	aliceBlock, _ := enigma.NewCipher(sharedKey)
+	bobBlock, _ := enigma.NewCipher(sharedKey)
 
 	plaintext := []byte("loremipsumdolorsitamet")
 	ciphertext := make([]byte, len(plaintext))
 
-	alice.Encrypt(ciphertext, plaintext)
+	alice := NewECBEncrypter(aliceBlock)
+	bob := NewECBDecrypter(bobBlock)
+
+	alice.CryptBlocks(ciphertext, plaintext)
 
 	fmt.Printf("[alice] %s -> %s\n", string(plaintext), (ciphertext))
 
-	bob.Decrypt(plaintext, ciphertext)
+	bob.CryptBlocks(plaintext, ciphertext)
 	fmt.Printf("[bob] %s -> %s\n", string(ciphertext), (plaintext))
 }

@@ -15,17 +15,13 @@ func NewCipher(key *Config) (*BlockCipher, error) {
 }
 
 func (c *BlockCipher) BlockSize() int {
-	return 8
+	return 1
 }
 
 func (c *BlockCipher) Encrypt(dst, src []byte) {
-	for i := 0; i < len(src); i++ {
-		dst[i] = byte(c.Enigma.Encrypt(Alphabet(src[i])))
-	}
+	dst[0] = byte(c.Enigma.Encrypt(Alphabet(src[0])))
 }
 
 func (c *BlockCipher) Decrypt(dst, src []byte) {
-	for i := 0; i < len(src); i++ {
-		dst[i] = byte(c.Enigma.Encrypt(Alphabet(src[i])))
-	}
+	dst[0] = byte(c.Enigma.Encrypt(Alphabet(src[0])))
 }
